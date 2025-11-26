@@ -1,0 +1,7 @@
+questionary
+rich
+streamlit
+fastapi
+uvicorn
+firebase-admin
+pyrebase4

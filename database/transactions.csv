@@ -1,0 +1,7 @@
+id,user_id,type,amount,date,name,description,billing_number,payment_method
+d6295818-c386-4f7f-8e9e-530cc415c155,dummy_user,Expense,0.99,2025-11-27,Umer,Cotton,#73862,Bank Account
+6c94c8c4-b57e-4ee2-bb05-6ab4d764f122,dummy_user,Expense,0.99,2025-11-27,Umer,Cotton,#73862,Bank Account
+4e40d93e-34ea-4191-b420-86012728cccb,dummy_user,Expense,0.99,2025-11-27,Umer,Cotton,#73862,Bank Account
+97c1f573-1755-455b-bd77-2b4b21c3aeea,dummy_user,Expense,0.99,2025-11-27,Umer,Cotton,#73862,Bank Account
+736ebf71-3def-437a-adf9-25770d34fe71,dummy_user,Expense,0.99,2025-11-27,Umer,Cotton,#73862,Bank Account
+2040f00b-eb36-488a-94b5-f3db1b5c7043,dummy_user,Expense,0.99,2025-11-27,Umer,Cotton,#73862,Bank Account

@@ -1,0 +1,69 @@
+[
+    {
+        "id": "78268c98-f05a-46f5-8cf7-7cbf32d68d84",
+        "user_id": "dummy_user",
+        "account_name": "Umer",
+        "entries": [
+            {
+                "name": "Umer",
+                "description": "Cotton",
+                "type": "Debit",
+                "amount": 0.99,
+                "billing_number": "#73862",
+                "date": "2025-11-27 00:31:07",
+                "paid": false,
+                "payment_method": "Bank Account"
+            },
+            {
+                "name": "Umer",
+                "description": "Cotton",
+                "type": "Debit",
+                "amount": 0.99,
+                "billing_number": "#73862",
+                "date": "2025-11-27 00:31:08",
+                "paid": false,
+                "payment_method": "Bank Account"
+            },
+            {
+                "name": "Umer",
+                "description": "Cotton",
+                "type": "Debit",
+                "amount": 0.99,
+                "billing_number": "#73862",
+                "date": "2025-11-27 00:31:09",
+                "paid": false,
+                "payment_method": "Bank Account"
+            },
+            {
+                "name": "Umer",
+                "description": "Cotton",
+                "type": "Debit",
+                "amount": 0.99,
+                "billing_number": "#73862",
+                "date": "2025-11-27 00:31:09",
+                "paid": false,
+                "payment_method": "Bank Account"
+            },
+            {
+                "name": "Umer",
+                "description": "Cotton",
+                "type": "Debit",
+                "amount": 0.99,
+                "billing_number": "#73862",
+                "date": "2025-11-27 00:31:09",
+                "paid": false,
+                "payment_method": "Bank Account"
+            },
+            {
+                "name": "Umer",
+                "description": "Cotton",
+                "type": "Debit",
+                "amount": 0.99,
+                "billing_number": "#73862",
+                "date": "2025-11-27 00:31:10",
+                "paid": false,
+                "payment_method": "Bank Account"
+            }
+        ]
+    }
+]

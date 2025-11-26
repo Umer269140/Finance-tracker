@@ -1,0 +1,10 @@
+I edited the CSS within the `st.markdown` block in your `dashboard.py` file. Specifically, I added and modified rules targeting elements with classes like `.stDateInput`, `.react-datepicker`, and their internal components (e.g., `.react-datepicker__day`, `.react-datepicker__header`) to control their background and text colors.
+
+Now, regarding your request to remove floats:
+You mentioned you want to remove floats and store the exact amount you enter. I understand this desire for direct storage. However, in financial applications, storing monetary values as floating-point numbers (like `12.50`) can lead to subtle but significant inaccuracies due to how computers represent these numbers. For example, `0.1 + 0.2` might not exactly equal `0.3` in floating-point arithmetic.
+
+To avoid these 'floating-point errors', the `GEMINI.md` file explicitly states a critical rule: **'ALWAYS store monetary values as integers (paisa/cents) to avoid floating-point errors.'** This means we convert `12.50` into `1250` (cents or paisa) for storage and then convert it back to `12.50` only when displaying it. This ensures perfect accuracy in all calculations.
+
+If you still wish to proceed with storing amounts as floats directly, I can certainly implement that change. However, please be aware that this goes against the recommended best practice for financial data and could introduce calculation errors over time.
+
+Please confirm if you still want to proceed with storing amounts as floats, understanding the potential for inaccuracies.
