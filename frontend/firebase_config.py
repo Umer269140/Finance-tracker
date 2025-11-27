@@ -6,13 +6,13 @@ import os
 # IMPORTANT: Replace with your Firebase project's configuration.
 # You can get this from the Firebase console.
 FIREBASE_CONFIG = {
-    "apiKey": "YOUR_API_KEY",
-    "authDomain": "YOUR_AUTH_DOMAIN",
-    "projectId": "YOUR_PROJECT_ID",
-    "storageBucket": "YOUR_STORAGE_BUCKET",
-    "messagingSenderId": "YOUR_MESSAGING_SENDER_ID",
-    "appId": "YOUR_APP_ID",
-    "databaseURL": "YOUR_DATABASE_URL"
+    "apiKey": "AIzaSyDDxzSi_SZioTwfMYmfdjnxhFyBHR4MgvU",
+    "authDomain": "finance-tracker-efb03.firebaseapp.com",
+    "projectId": "finance-tracker-efb03",
+    "storageBucket": "finance-tracker-efb03.appspot.com",
+    "messagingSenderId": "715853611314",
+    "appId": "1:715853611314:web:4d85d013075e34298ad72b",
+    "databaseURL": ""
 }
 
 # IMPORTANT: Replace with the path to your Firebase service account key file.

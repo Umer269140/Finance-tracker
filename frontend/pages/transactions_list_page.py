@@ -36,7 +36,7 @@ def app():
             with col_delete:
                 delete_button = st.button("X", key=f"delete_trans_{i}")
                 if delete_button:
-                    t.delete_transaction(trans['id'])
+                    t.delete_transaction(user_id, trans['id'])
                     st.rerun()
         st.markdown("---")
     else:
