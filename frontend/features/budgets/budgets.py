@@ -1,7 +1,7 @@
 import firebase_config
 from features.transactions import transactions as t
 
-def set_budget(user_id, category, amount):
+def set_budget(user_id, id_token, category, amount):
     """Sets a monthly budget for a user in the Firebase Realtime Database."""
     if not firebase_config.db:
         raise Exception("Firebase Realtime Database not configured.")
@@ -12,15 +12,15 @@ def set_budget(user_id, category, amount):
     }
     
     # Set the budget for a user and category
-    firebase_config.db.child("budgets").child(user_id).child(category).set(budget_data)
+    firebase_config.db.child("budgets").child(user_id).child(category).set(budget_data, token=id_token)
     print(f"Budget for {category} set to {amount}")
 
-def get_budgets(user_id):
+def get_budgets(user_id, id_token):
     """Retrieves all budgets for a user from the Firebase Realtime Database."""
     if not firebase_config.db:
         return []
     try:
-        budgets_ref = firebase_config.db.child("budgets").child(user_id).get()
+        budgets_ref = firebase_config.db.child("budgets").child(user_id).get(token=id_token)
         if budgets_ref.val():
             # The result from get() is a Pyrebase object, we need to convert it to a list of dicts
             budgets = [item.val() for item in budgets_ref.each()]
@@ -31,10 +31,10 @@ def get_budgets(user_id):
         print(f"Could not get budgets: {e}")
         return []
 
-def get_budget_summary(user_id):
+def get_budget_summary(user_id, id_token):
     """Calculates the budget summary for a user."""
-    budgets = get_budgets(user_id)
-    transactions = t.get_all_transactions(user_id)
+    budgets = get_budgets(user_id, id_token)
+    transactions = t.get_all_transactions(user_id, id_token)
     
     budget_details = []
     total_budget_amount = 0

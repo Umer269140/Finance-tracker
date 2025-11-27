@@ -17,19 +17,21 @@ def app():
     if st.button("Add Transaction"):
         if name and amount > 0:
             user_id = st.session_state.user_id
-            t.add_transaction(user_id, transaction_type, amount, date.strftime("%Y-%m-%d"), name, description, billing_number, payment_method) # Pass payment_method
+            id_token = st.session_state.id_token
+            t.add_transaction(user_id, id_token, transaction_type, amount, date.strftime("%Y-%m-%d"), name, description, billing_number, payment_method) # Pass payment_method
             st.success("Transaction added successfully!")
 
             # Automatically create/add to ledger account with transaction name
-            if l.add_ledger_account(user_id, name): # Try to create a new ledger account
+            if l.add_ledger_account(user_id, id_token, name): # Try to create a new ledger account
                 st.info(f"Ledger account '{name}' created automatically.")
             
             # Get the ledger account (either newly created or existing)
-            ledger_account = l.get_ledger_account_by_name(user_id, name)
+            ledger_account = l.get_ledger_account_by_name(user_id, id_token, name)
             if ledger_account:
                 # Add the transaction as an entry to this ledger account
                 if l.add_entry_to_ledger_account(
                     user_id,
+                    id_token,
                     ledger_account["id"], 
                     name, # Use transaction name as entry name
                     description, # Use user-provided description

@@ -12,7 +12,7 @@ FIREBASE_CONFIG = {
     "storageBucket": "finance-tracker-efb03.appspot.com",
     "messagingSenderId": "715853611314",
     "appId": "1:715853611314:web:4d85d013075e34298ad72b",
-    "databaseURL": "https://finance-tracker-efb03-default-rtdb.firebaseio.com/"
+    "databaseURL": "https://finance-tracker-efb03-default-rtdb.asia-southeast1.firebasedatabase.app"
 }
 
 # IMPORTANT: Replace with the path to your Firebase service account key file.

@@ -4,14 +4,15 @@ from features.ledger import ledger as l
 def app():
     st.header("Ledger Accounts")
     user_id = st.session_state.user_id
-    accounts = l.get_all_ledger_accounts(user_id)
+    id_token = st.session_state.id_token
+    accounts = l.get_all_ledger_accounts(user_id, id_token)
 
     # Option to create a new ledger account
     with st.expander("Create New Ledger Account"):
         new_account_name = st.text_input("Enter new ledger account name:")
         if st.button("Create Account"):
             if new_account_name:
-                if l.add_ledger_account(user_id, new_account_name):
+                if l.add_ledger_account(user_id, id_token, new_account_name):
                     st.success(f"Ledger account '{new_account_name}' created.")
                     st.rerun()
                 else:
@@ -39,7 +40,7 @@ def app():
                     st.session_state.page = "Ledger Account Detail"
             with col_delete:
                 if st.button("X", key=f"delete_account_{account.get('id')}"):
-                    l.delete_ledger_account(user_id, account.get('id'))
+                    l.delete_ledger_account(user_id, id_token, account.get('id'))
                     st.rerun()
         st.markdown("---")
     else:

@@ -18,6 +18,7 @@ def app():
                     user = firebase_config.auth.sign_in_with_email_and_password(email, password)
                     st.session_state.logged_in = True
                     st.session_state.user_id = user['localId']
+                    st.session_state.id_token = user['idToken']
                     st.session_state.page = "Add Transaction"
                     st.rerun()
                 except Exception as e:
