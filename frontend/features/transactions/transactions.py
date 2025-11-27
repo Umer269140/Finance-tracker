@@ -27,13 +27,17 @@ def get_all_transactions(user_id):
     """Retrieves all transactions for a user from the Firebase Realtime Database."""
     if not firebase_config.db:
         return []
-        
-    transactions_ref = firebase_config.db.child("transactions").child(user_id).get()
-    if transactions_ref:
-        # The result from get() is a Pyrebase object, we need to convert it to a list of dicts
-        transactions = [item.val() for item in transactions_ref.each()]
-        return transactions
-    return []
+    try:
+        transactions_ref = firebase_config.db.child("transactions").child(user_id).get()
+        if transactions_ref.val():
+            # The result from get() is a Pyrebase object, we need to convert it to a list of dicts
+            transactions = [item.val() for item in transactions_ref.each()]
+            return transactions
+        return []
+    except Exception as e:
+        # If the path does not exist, a 404 error will be raised. We can ignore it and return an empty list.
+        print(f"Could not get transactions: {e}")
+        return []
 
 def delete_transaction(user_id, transaction_id):
     """Deletes a transaction from the Firebase Realtime Database."""

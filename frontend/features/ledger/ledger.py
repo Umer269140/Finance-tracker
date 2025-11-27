@@ -27,11 +27,15 @@ def get_all_ledger_accounts(user_id):
     """Retrieves all ledger accounts for a user from the Firebase Realtime Database."""
     if not firebase_config.db:
         return []
-        
-    accounts_ref = firebase_config.db.child("ledgers").child(user_id).get()
-    if accounts_ref.val():
-        return [item.val() for item in accounts_ref.each()]
-    return []
+    try:
+        accounts_ref = firebase_config.db.child("ledgers").child(user_id).get()
+        if accounts_ref.val():
+            return [item.val() for item in accounts_ref.each()]
+        return []
+    except Exception as e:
+        # If the path does not exist, a 404 error will be raised. We can ignore it and return an empty list.
+        print(f"Could not get ledger accounts: {e}")
+        return []
 
 def get_ledger_account_by_id(user_id, account_id):
     """Retrieves a single ledger account by its ID for a user."""

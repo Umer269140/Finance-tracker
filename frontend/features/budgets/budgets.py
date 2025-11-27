@@ -19,13 +19,17 @@ def get_budgets(user_id):
     """Retrieves all budgets for a user from the Firebase Realtime Database."""
     if not firebase_config.db:
         return []
-        
-    budgets_ref = firebase_config.db.child("budgets").child(user_id).get()
-    if budgets_ref.val():
-        # The result from get() is a Pyrebase object, we need to convert it to a list of dicts
-        budgets = [item.val() for item in budgets_ref.each()]
-        return budgets
-    return []
+    try:
+        budgets_ref = firebase_config.db.child("budgets").child(user_id).get()
+        if budgets_ref.val():
+            # The result from get() is a Pyrebase object, we need to convert it to a list of dicts
+            budgets = [item.val() for item in budgets_ref.each()]
+            return budgets
+        return []
+    except Exception as e:
+        # If the path does not exist, a 404 error will be raised. We can ignore it and return an empty list.
+        print(f"Could not get budgets: {e}")
+        return []
 
 def get_budget_summary(user_id):
     """Calculates the budget summary for a user."""
