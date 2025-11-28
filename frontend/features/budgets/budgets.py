@@ -1,6 +1,6 @@
 import firebase_config
-import frontend.features.local_data as local_data # Import local data functions
-import frontend.features.transactions.transactions as t # Import transactions for summary
+from .. import local_data
+from ..transactions import transactions as t # Import transactions for summary
 
 def set_budget(user_id, id_token, is_admin, category, amount):
     """Sets a monthly budget for a user (local for admin, Firebase for others)."""

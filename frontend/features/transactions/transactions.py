@@ -1,7 +1,7 @@
 import firebase_config
 from datetime import datetime
 import uuid
-import frontend.features.local_data as local_data # Import local data functions
+from .. import local_data
 
 def add_transaction(user_id, id_token, is_admin, transaction_type, amount, date, name, description, billing_number, payment_method):
     """Adds a new transaction to the database (local for admin, Firebase for others)."""

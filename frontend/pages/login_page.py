@@ -22,6 +22,7 @@ def app():
                 st.session_state.logged_in = True
                 st.session_state.is_admin = True
                 st.session_state.user_id = "admin"  # Fixed user_id for admin
+                st.session_state.id_token = None # No Firebase ID token for admin
                 st.session_state.page = "Add Transaction"
                 st.rerun()
             elif firebase_config.auth:

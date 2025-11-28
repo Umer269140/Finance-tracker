@@ -36,6 +36,10 @@ st.subheader("Now the account is easy! cause Its online")
 # Initialize login state
 if 'logged_in' not in st.session_state:
     st.session_state.logged_in = False
+if 'id_token' not in st.session_state:
+    st.session_state.id_token = None # Initialize id_token to None
+if 'is_admin' not in st.session_state:
+    st.session_state.is_admin = False # Initialize is_admin to False
 
 if not st.session_state.logged_in:
     login_page.app()

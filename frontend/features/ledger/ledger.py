@@ -1,7 +1,7 @@
 import firebase_config
 from datetime import datetime
 import uuid
-import frontend.features.local_data as local_data # Import local data functions
+from .. import local_data
 
 def add_ledger_account(user_id, id_token, is_admin, account_name):
     """Adds a new empty ledger account to the database (local for admin, Firebase for others)."""
