@@ -1,61 +1,71 @@
 import firebase_config
 from datetime import datetime
 import uuid
+import frontend.features.local_data as local_data # Import local data functions
 
-def add_transaction(user_id, id_token, transaction_type, amount, date, name, description, billing_number, payment_method):
-    """Adds a new transaction to the Firebase Realtime Database."""
-    if not firebase_config.db:
-        raise Exception("Firebase Realtime Database not configured.")
-    
-    transaction_id = str(uuid.uuid4())
-    transaction_data = {
-        'id': transaction_id,
-        'type': transaction_type,
-        'amount': amount,
-        'date': date,
-        'name': name,
-        'description': description,
-        'billing_number': billing_number,
-        'payment_method': payment_method
-    }
-    
-    # Push the data to a user-specific path
-    firebase_config.db.child("transactions").child(user_id).child(transaction_id).set(transaction_data, token=id_token)
-    print(f"Transaction added with ID: {transaction_id}")
+def add_transaction(user_id, id_token, is_admin, transaction_type, amount, date, name, description, billing_number, payment_method):
+    """Adds a new transaction to the database (local for admin, Firebase for others)."""
+    if is_admin:
+        local_data.add_local_transaction(user_id, transaction_type, amount, date, name, description, billing_number, payment_method)
+    else:
+        if not firebase_config.db:
+            raise Exception("Firebase Realtime Database not configured.")
+        
+        transaction_id = str(uuid.uuid4())
+        transaction_data = {
+            'id': transaction_id,
+            'type': transaction_type,
+            'amount': amount,
+            'date': date,
+            'name': name,
+            'description': description,
+            'billing_number': billing_number,
+            'payment_method': payment_method
+        }
+        
+        firebase_config.db.child("transactions").child(user_id).child(transaction_id).set(transaction_data, token=id_token)
+        print(f"Transaction added with ID: {transaction_id}")
 
-def get_all_transactions(user_id, id_token):
-    """Retrieves all transactions for a user from the Firebase Realtime Database."""
-    if not firebase_config.db:
-        return []
-    try:
-        transactions_ref = firebase_config.db.child("transactions").child(user_id).get(token=id_token)
-        if transactions_ref.val():
-            # The result from get() is a Pyrebase object, we need to convert it to a list of dicts
-            transactions = [item.val() for item in transactions_ref.each()]
-            return transactions
-        return []
-    except Exception as e:
-        # If the path does not exist, a 404 error will be raised. We can ignore it and return an empty list.
-        print(f"Could not get transactions: {e}")
-        return []
+def get_all_transactions(user_id, id_token, is_admin):
+    """Retrieves all transactions for a user (local for admin, Firebase for others)."""
+    if is_admin:
+        return local_data.get_all_local_transactions(user_id)
+    else:
+        if not firebase_config.db:
+            return []
+        try:
+            transactions_ref = firebase_config.db.child("transactions").child(user_id).get(token=id_token)
+            if transactions_ref.val():
+                transactions = [item.val() for item in transactions_ref.each()]
+                return transactions
+            return []
+        except Exception as e:
+            print(f"Could not get transactions: {e}")
+            return []
 
-def delete_transaction(user_id, id_token, transaction_id):
-    """Deletes a transaction from the Firebase Realtime Database."""
-    if not firebase_config.db:
-        raise Exception("Firebase Realtime Database not configured.")
+def delete_transaction(user_id, id_token, is_admin, transaction_id):
+    """Deletes a transaction from the database (local for admin, Firebase for others)."""
+    if is_admin:
+        local_data.delete_local_transaction(user_id, transaction_id)
+    else:
+        if not firebase_config.db:
+            raise Exception("Firebase Realtime Database not configured.")
 
-    firebase_config.db.child("transactions").child(user_id).child(transaction_id).remove(token=id_token)
-    print(f"Transaction with ID {transaction_id} deleted successfully.")
+        firebase_config.db.child("transactions").child(user_id).child(transaction_id).remove(token=id_token)
+        print(f"Transaction with ID {transaction_id} deleted successfully.")
 
 
-def get_financial_summary(user_id, id_token):
-    """Calculates total income, total expenses, and current balance for a user."""
-    transactions = get_all_transactions(user_id, id_token)
-    total_income = sum(trans["amount"] for trans in transactions if trans["type"] == "Income")
-    total_expenses = sum(trans["amount"] for trans in transactions if trans["type"] == "Expense")
-    current_balance = total_income - total_expenses
-    return {
-        "total_income": total_income,
-        "total_expenses": total_expenses,
-        "current_balance": current_balance
-    }
+def get_financial_summary(user_id, id_token, is_admin):
+    """Calculates total income, total expenses, and current balance for a user (local for admin, Firebase for others)."""
+    if is_admin:
+        return local_data.get_local_financial_summary(user_id)
+    else:
+        transactions = get_all_transactions(user_id, id_token, is_admin=False) # Ensure this calls Firebase version
+        total_income = sum(trans["amount"] for trans in transactions if trans["type"] == "Income")
+        total_expenses = sum(trans["amount"] for trans in transactions if trans["type"] == "Expense")
+        current_balance = total_income - total_expenses
+        return {
+            "total_income": total_income,
+            "total_expenses": total_expenses,
+            "current_balance": current_balance
+        }

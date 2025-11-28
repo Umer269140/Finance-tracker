@@ -6,6 +6,7 @@ def app():
     
     user_id = st.session_state.user_id
     id_token = st.session_state.id_token
+    is_admin = st.session_state.get('is_admin', False)
     
     all_categories = ["Food", "Transport", "Shopping", "Bills", "Entertainment", "Health", "Other"]
     budget_category = st.selectbox("Select category for budget:", all_categories)
@@ -13,14 +14,14 @@ def app():
 
     if st.button("Set Budget"):
         if budget_category and budget_amount > 0:
-            b.set_budget(user_id, id_token, budget_category, budget_amount)
+            b.set_budget(user_id, id_token, is_admin, budget_category, budget_amount)
             st.success(f"Monthly budget of Rs {budget_amount:.2f} set for {budget_category}.")
             st.rerun()
         else:
             st.error("Please enter a valid category and amount for the budget.")
 
     st.header("Monthly Budget Summary")
-    budget_summary = b.get_budget_summary(user_id, id_token)
+    budget_summary = b.get_budget_summary(user_id, id_token, is_admin)
 
     if budget_summary["budget_details"]:
         budget_table_data = []

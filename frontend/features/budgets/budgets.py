@@ -1,46 +1,53 @@
 import firebase_config
-from features.transactions import transactions as t
+import frontend.features.local_data as local_data # Import local data functions
+import frontend.features.transactions.transactions as t # Import transactions for summary
 
-def set_budget(user_id, id_token, category, amount):
-    """Sets a monthly budget for a user in the Firebase Realtime Database."""
-    if not firebase_config.db:
-        raise Exception("Firebase Realtime Database not configured.")
-    
-    budget_data = {
-        'category': category,
-        'amount': amount
-    }
-    
-    # Set the budget for a user and category
-    firebase_config.db.child("budgets").child(user_id).child(category).set(budget_data, token=id_token)
-    print(f"Budget for {category} set to {amount}")
+def set_budget(user_id, id_token, is_admin, category, amount):
+    """Sets a monthly budget for a user (local for admin, Firebase for others)."""
+    if is_admin:
+        local_data.set_local_budget(user_id, category, amount)
+    else:
+        if not firebase_config.db:
+            raise Exception("Firebase Realtime Database not configured.")
+        
+        budget_data = {
+            'category': category,
+            'amount': amount
+        }
+        
+        firebase_config.db.child("budgets").child(user_id).child(category).set(budget_data, token=id_token)
+        print(f"Budget for {category} set to {amount}")
 
-def get_budgets(user_id, id_token):
-    """Retrieves all budgets for a user from the Firebase Realtime Database."""
-    if not firebase_config.db:
-        return []
-    try:
-        budgets_ref = firebase_config.db.child("budgets").child(user_id).get(token=id_token)
-        if budgets_ref.val():
-            # The result from get() is a Pyrebase object, we need to convert it to a list of dicts
-            budgets = [item.val() for item in budgets_ref.each()]
-            return budgets
-        return []
-    except Exception as e:
-        # If the path does not exist, a 404 error will be raised. We can ignore it and return an empty list.
-        print(f"Could not get budgets: {e}")
-        return []
+def get_budgets(user_id, id_token, is_admin):
+    """Retrieves all budgets for a user (local for admin, Firebase for others)."""
+    if is_admin:
+        return local_data.get_local_budgets(user_id)
+    else:
+        if not firebase_config.db:
+            return []
+        try:
+            budgets_ref = firebase_config.db.child("budgets").child(user_id).get(token=id_token)
+            if budgets_ref.val():
+                budgets = [item.val() for item in budgets_ref.each()]
+                return budgets
+            return []
+        except Exception as e:
+            print(f"Could not get budgets: {e}")
+            return []
 
-def get_budget_summary(user_id, id_token):
-    """Calculates the budget summary for a user."""
-    budgets = get_budgets(user_id, id_token)
-    transactions = t.get_all_transactions(user_id, id_token)
+def get_budget_summary(user_id, id_token, is_admin):
+    """Calculates the budget summary for a user (local for admin, Firebase for others)."""
+    if is_admin:
+        budgets = local_data.get_local_budgets(user_id)
+        transactions = local_data.get_all_local_transactions(user_id)
+    else:
+        budgets = get_budgets(user_id, id_token, is_admin) # Ensure this calls Firebase version
+        transactions = t.get_all_transactions(user_id, id_token, is_admin) # Ensure this calls Firebase version
     
     budget_details = []
     total_budget_amount = 0
     total_spent_amount = 0
 
-    # Ensure budgets is a list of dictionaries
     if not isinstance(budgets, list):
         budgets = []
         
@@ -48,7 +55,6 @@ def get_budget_summary(user_id, id_token):
         category = budget.get('category')
         budget_amount = budget.get('amount', 0)
         
-        # This assumes transaction amounts are stored as numbers
         spent = sum(
             trans.get('amount', 0) 
             for trans in transactions 

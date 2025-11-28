@@ -6,10 +6,11 @@ def app():
 
     user_id = st.session_state.user_id
     id_token = st.session_state.id_token
+    is_admin = st.session_state.get('is_admin', False)
 
     if 'selected_account_id' in st.session_state and st.session_state.selected_account_id:
         account_id = st.session_state.selected_account_id
-        account = l.get_ledger_account_by_id(user_id, id_token, account_id)
+        account = l.get_ledger_account_by_id(user_id, id_token, is_admin, account_id)
 
         if account:
             st.subheader(f"Account: {account.get('account_name', 'N/A')}")
@@ -55,11 +56,11 @@ def app():
                     with col_paid:
                         paid_status = st.checkbox("", value=entry.get('paid', False), key=f"paid_checkbox_{account_id}_{i}")
                         if paid_status != entry.get('paid', False):
-                            l.mark_ledger_entry_paid(user_id, id_token, account_id, i, paid_status)
+                            l.mark_ledger_entry_paid(user_id, id_token, is_admin, account_id, i, paid_status)
                             st.rerun()
                     with col_del:
                         if st.button("X", key=f"delete_entry_{account_id}_{i}"):
-                            l.delete_entry_from_ledger_account(user_id, id_token, account_id, i)
+                            l.delete_entry_from_ledger_account(user_id, id_token, is_admin, account_id, i)
                             st.rerun()
                 st.markdown("---")
             else:

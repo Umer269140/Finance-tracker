@@ -1,1 +1,2 @@
-{"type": "Expense", "amount": 9000000}
+# Budget allocations per category
+# Format: category=amount
