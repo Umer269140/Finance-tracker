@@ -5,9 +5,9 @@ import uuid
 from datetime import datetime
 
 # Define file paths
-TRANSACTIONS_FILE = os.path.join(os.path.dirname(__file__), '../../../database/transactions.csv')
-BUDGETS_FILE = os.path.join(os.path.dirname(__file__), '../../../database/budgets.txt')
-LEDGERS_FILE = os.path.join(os.path.dirname(__file__), '../../../database/ledgers.json')
+TRANSACTIONS_FILE = os.path.join(os.path.dirname(__file__), '../../database/transactions.csv')
+BUDGETS_FILE = os.path.join(os.path.dirname(__file__), '../../database/budgets.txt')
+LEDGERS_FILE = os.path.join(os.path.dirname(__file__), '../../database/ledgers.json')
 
 # Ensure database directory exists
 os.makedirs(os.path.dirname(TRANSACTIONS_FILE), exist_ok=True)
