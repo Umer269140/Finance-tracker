@@ -31,7 +31,7 @@ with col2:
     st.title("Cashbook Khata")
 
 st.write("Welcome to Cashbook Khata, your personal finance tracker!")
-st.subheader("Now the account is easy! cause Its online")
+st.subheader("Smart Expense Tracking, Powered by AI.")
 
 # Initialize login state
 if 'logged_in' not in st.session_state:
