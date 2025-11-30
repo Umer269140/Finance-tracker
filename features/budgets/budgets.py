@@ -1,48 +1,48 @@
 import firebase_config
-from .. import local_data
 from ..transactions import transactions as t # Import transactions for summary
 
-def set_budget(user_id, id_token, is_admin, category, amount):
-    """Sets a monthly budget for a user (local for admin, Firebase for others)."""
-    if is_admin:
-        local_data.set_local_budget(user_id, category, amount)
-    else:
-        if not firebase_config.db:
-            raise Exception("Firebase Realtime Database not configured.")
-        
-        budget_data = {
-            'category': category,
-            'amount': amount
-        }
-        
-        firebase_config.db.child("budgets").child(user_id).child(category).set(budget_data, token=id_token)
-        print(f"Budget for {category} set to {amount}")
+def set_budget(session_state, user_id, id_token, is_admin, category, amount):
+    """Sets a monthly budget for a user in Firebase."""
+    if not firebase_config.db:
+        raise Exception("Firebase Realtime Database not configured.")
 
-def get_budgets(user_id, id_token, is_admin):
-    """Retrieves all budgets for a user (local for admin, Firebase for others)."""
-    if is_admin:
-        return local_data.get_local_budgets(user_id)
-    else:
-        if not firebase_config.db:
-            return []
-        try:
-            budgets_ref = firebase_config.db.child("budgets").child(user_id).get(token=id_token)
-            if budgets_ref.val():
-                budgets = [item.val() for item in budgets_ref.each()]
-                return budgets
-            return []
-        except Exception as e:
-            print(f"Could not get budgets: {e}")
-            return []
+    # Get a fresh ID token
+    id_token = firebase_config.get_fresh_id_token(session_state)
+    if not id_token:
+        raise Exception("Failed to get a fresh ID token. Please log in again.")
+    
+    budget_data = {
+        'category': category,
+        'amount': amount
+    }
+    
+    firebase_config.db.child("budgets").child(user_id).child(category).set(budget_data, token=id_token)
+    print(f"Budget for {category} set to {amount}")
 
-def get_budget_summary(user_id, id_token, is_admin):
-    """Calculates the budget summary for a user (local for admin, Firebase for others)."""
-    if is_admin:
-        budgets = local_data.get_local_budgets(user_id)
-        transactions = local_data.get_all_local_transactions(user_id)
-    else:
-        budgets = get_budgets(user_id, id_token, is_admin) # Ensure this calls Firebase version
-        transactions = t.get_all_transactions(user_id, id_token, is_admin) # Ensure this calls Firebase version
+def get_budgets(session_state, user_id, id_token, is_admin):
+    """Retrieves all budgets for a user from Firebase."""
+    if not firebase_config.db:
+        return []
+    
+    # Get a fresh ID token
+    id_token = firebase_config.get_fresh_id_token(session_state)
+    if not id_token:
+        # If token refresh fails, assume not logged in or session expired
+        return []
+    try:
+        budgets_ref = firebase_config.db.child("budgets").child(user_id).get(token=id_token)
+        if budgets_ref.val():
+            budgets = [item.val() for item in budgets_ref.each()]
+            return budgets
+        return []
+    except Exception as e:
+        print(f"Could not get budgets: {e}")
+        return []
+
+def get_budget_summary(session_state, user_id, id_token, is_admin):
+    """Calculates the budget summary for a user from Firebase."""
+    budgets = get_budgets(session_state, user_id, id_token, is_admin) # Pass session_state
+    transactions = t.get_all_transactions(session_state, user_id, id_token, is_admin) # Pass session_state
     
     budget_details = []
     total_budget_amount = 0

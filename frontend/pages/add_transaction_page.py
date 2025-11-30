@@ -19,18 +19,19 @@ def app():
             user_id = st.session_state.user_id
             id_token = st.session_state.id_token
             is_admin = st.session_state.get('is_admin', False)
-            t.add_transaction(user_id, id_token, is_admin, transaction_type, amount, date.strftime("%Y-%m-%d"), name, description, billing_number, payment_method) # Pass payment_method
+            t.add_transaction(st.session_state, user_id, id_token, is_admin, transaction_type, amount, date.strftime("%Y-%m-%d"), name, description, billing_number, payment_method) # Pass session_state
             st.success("Transaction added successfully!")
 
             # Automatically create/add to ledger account with transaction name
-            if l.add_ledger_account(user_id, id_token, is_admin, name): # Try to create a new ledger account
+            if l.add_ledger_account(st.session_state, user_id, id_token, is_admin, name): # Pass session_state
                 st.info(f"Ledger account '{name}' created automatically.")
             
             # Get the ledger account (either newly created or existing)
-            ledger_account = l.get_ledger_account_by_name(user_id, id_token, is_admin, name)
+            ledger_account = l.get_ledger_account_by_name(st.session_state, user_id, id_token, is_admin, name) # Pass session_state
             if ledger_account:
                 # Add the transaction as an entry to this ledger account
                 if l.add_entry_to_ledger_account(
+                    st.session_state, # Pass session_state
                     user_id,
                     id_token,
                     is_admin,

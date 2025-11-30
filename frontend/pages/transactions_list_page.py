@@ -7,7 +7,7 @@ def app():
     user_id = st.session_state.user_id
     id_token = st.session_state.id_token
     is_admin = st.session_state.get('is_admin', False)
-    transactions = t.get_all_transactions(user_id, id_token, is_admin)
+    transactions = t.get_all_transactions(st.session_state, user_id, id_token, is_admin) # Pass session_state
 
     if transactions:
         st.write("### Your Transactions")
@@ -38,14 +38,14 @@ def app():
             with col_delete:
                 delete_button = st.button("X", key=f"delete_trans_{i}")
                 if delete_button:
-                    t.delete_transaction(user_id, id_token, is_admin, trans['id'])
+                    t.delete_transaction(st.session_state, user_id, id_token, is_admin, trans['id']) # Pass session_state
                     st.rerun()
         st.markdown("---")
     else:
         st.write("No transactions yet.")
 
     st.subheader("Financial Summary")
-    summary = t.get_financial_summary(user_id, id_token, is_admin)
+    summary = t.get_financial_summary(st.session_state, user_id, id_token, is_admin) # Pass session_state
     st.write(f"Total Income: :green[Rs {summary['total_income']:.2f}]")
     st.write(f"Total Expenses: :red[Rs {summary['total_expenses']:.2f}]")
     st.write(f"Current Balance: :blue[Rs {summary['current_balance']:.2f}]")

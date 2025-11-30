@@ -1,1 +1,19 @@
-[]
+[
+    {
+        "id": "a3bde74d-4721-45be-a42a-37950f733a3d",
+        "user_id": "admin",
+        "account_name": "Umer",
+        "entries": [
+            {
+                "name": "Umer",
+                "description": "Chips",
+                "type": "Debit",
+                "amount": 0.99,
+                "billing_number": "#43",
+                "date": "2025-11-30 13:23:26",
+                "paid": false,
+                "payment_method": "Cash"
+            }
+        ]
+    }
+]

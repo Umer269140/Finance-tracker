@@ -6,3 +6,4 @@ uvicorn
 firebase-admin
 pyrebase4
 setuptools
+python-dotenv

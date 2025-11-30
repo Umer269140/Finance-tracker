@@ -1,6 +1,7 @@
 venv/
 __pycache__/
 *.pyc
+.env
 message_to_user.md
 user_instruction.md
 further_instruction.md

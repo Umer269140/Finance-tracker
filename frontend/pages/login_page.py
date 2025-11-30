@@ -3,10 +3,15 @@ import firebase_config
 from firebase_admin import auth as admin_auth
 import json
 from requests.exceptions import HTTPError
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Admin Credentials
-ADMIN_EMAIL = "umerjunaidzakaria@gmail.com"
-ADMIN_PASSWORD = "Pagalsimon123"
+ADMIN_EMAIL = os.environ.get("ADMIN_EMAIL")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 
 # Map Firebase error messages to user-friendly messages
 FIREBASE_ERROR_MESSAGES = {
@@ -22,6 +27,9 @@ FIREBASE_ERROR_MESSAGES = {
 def app():
     st.title("Welcome to Cashbook Khata")
 
+    if not ADMIN_EMAIL or not ADMIN_PASSWORD:
+        st.warning("Admin credentials are not set. Please set the ADMIN_EMAIL and ADMIN_PASSWORD environment variables.")
+
     choice = st.selectbox("Login/Signup", ["Login", "Sign up"])
 
     if choice == "Login":
@@ -31,20 +39,19 @@ def app():
 
         if st.button("Login"):
             # Check for admin login first
-            if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
-                st.session_state.logged_in = True
-                st.session_state.is_admin = True
-                st.session_state.user_id = "admin"  # Fixed user_id for admin
-                st.session_state.id_token = None # No Firebase ID token for admin
-                st.session_state.page = "Add Transaction"
-                st.rerun()
-            elif firebase_config.auth:
+            if firebase_config.auth:
                 try:
                     user = firebase_config.auth.sign_in_with_email_and_password(email, password)
                     st.session_state.logged_in = True
-                    st.session_state.is_admin = False # Not an admin user
                     st.session_state.user_id = user['localId']
                     st.session_state.id_token = user['idToken']
+                    st.session_state.refresh_token = user['refreshToken'] # Store refresh token
+                    
+                    if email == ADMIN_EMAIL:
+                        st.session_state.is_admin = True
+                    else:
+                        st.session_state.is_admin = False
+                    
                     st.session_state.page = "Add Transaction"
                     st.rerun()
                 except HTTPError as e:

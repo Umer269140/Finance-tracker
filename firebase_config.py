@@ -21,8 +21,27 @@ FIREBASE_CONFIG = {
 
 pb = None
 auth = None
-db = None
+    db = None
 FIREBASE_INIT_ERROR = None
+
+def get_fresh_id_token(session_state):
+    if "refresh_token" not in session_state or not auth:
+        return None # No refresh token or auth object available
+
+    try:
+        # Pyrebase refresh method returns a new ID token and refresh token
+        refreshed_user = auth.refresh(session_state.refresh_token)
+        session_state.id_token = refreshed_user['idToken']
+        session_state.refresh_token = refreshed_user['refreshToken'] # Update refresh token as well
+        return session_state.id_token
+    except Exception as e:
+        print(f"Error refreshing token: {e}")
+        # Optionally, log out user or prompt re-login if refresh fails
+        session_state.logged_in = False
+        session_state.id_token = None
+        session_state.refresh_token = None
+        session_state.user_id = None
+        return None
 
 try:
     # Check if the app is already initialized

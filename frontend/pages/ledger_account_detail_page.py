@@ -10,7 +10,7 @@ def app():
 
     if 'selected_account_id' in st.session_state and st.session_state.selected_account_id:
         account_id = st.session_state.selected_account_id
-        account = l.get_ledger_account_by_id(user_id, id_token, is_admin, account_id)
+        account = l.get_ledger_account_by_id(st.session_state, user_id, id_token, is_admin, account_id) # Pass session_state
 
         if account:
             st.subheader(f"Account: {account.get('account_name', 'N/A')}")
@@ -53,7 +53,7 @@ def app():
                         st.write(entry.get('date', ''))
                     with col_del:
                         if st.button("X", key=f"delete_entry_{account_id}_{i}"):
-                            l.delete_entry_from_ledger_account(user_id, id_token, is_admin, account_id, i)
+                            l.delete_entry_from_ledger_account(st.session_state, user_id, id_token, is_admin, account_id, i) # Pass session_state
                             st.rerun()
                 st.markdown("---")
             else:
