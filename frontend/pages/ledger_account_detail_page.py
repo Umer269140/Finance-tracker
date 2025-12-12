@@ -37,7 +37,7 @@ def app():
                 with col_del_h:
                     st.write("**Del**")
 
-                for i, entry in enumerate(entries):
+                for entry in entries:
                     col_name, col_desc, col_type, col_amount, col_bill, col_date, col_del = st.columns([1.5, 2, 1, 1, 1.5, 1.5, 0.5])
                     with col_name:
                         st.write(entry.get('name', ''))
@@ -52,8 +52,8 @@ def app():
                     with col_date:
                         st.write(entry.get('date', ''))
                     with col_del:
-                        if st.button("X", key=f"delete_entry_{account_id}_{i}"):
-                            l.delete_entry_from_ledger_account(st.session_state, user_id, id_token, is_admin, account_id, i) # Pass session_state
+                        if st.button("X", key=f"delete_entry_{account_id}_{entry.get('id')}"):
+                            l.delete_entry_from_ledger_account(st.session_state, user_id, id_token, is_admin, account_id, entry.get('id')) # Pass session_state
                             st.rerun()
                 st.markdown("---")
             else:

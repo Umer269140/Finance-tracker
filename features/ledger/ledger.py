@@ -2,6 +2,10 @@ import firebase_config
 from datetime import datetime
 import uuid
 
+import firebase_config
+from datetime import datetime
+import uuid
+
 def add_ledger_account(session_state, user_id, id_token, is_admin, account_name):
     """Adds a new empty ledger account to the Firebase Realtime Database."""
     if not firebase_config.db:
@@ -19,7 +23,6 @@ def add_ledger_account(session_state, user_id, id_token, is_admin, account_name)
     account_id = str(uuid.uuid4())
     new_account = {
         'account_name': account_name,
-        'entries': []
     }
     
     firebase_config.db.child("ledgers").child(user_id).child(account_id).set(new_account, token=id_token)
@@ -42,6 +45,13 @@ def get_all_ledger_accounts(session_state, user_id, id_token, is_admin):
             for item in accounts_ref.each():
                 account = item.val()
                 account['id'] = item.key() # Add the ID from the Firebase key
+                if 'entries' in account and isinstance(account['entries'], dict):
+                    # Convert entries dictionary to a list of dictionaries, including the entry ID
+                    entries_list = []
+                    for entry_id, entry_data in account['entries'].items():
+                        entry_data['id'] = entry_id
+                        entries_list.append(entry_data)
+                    account['entries'] = entries_list
                 accounts.append(account)
             return accounts
         return []
@@ -71,7 +81,7 @@ def get_ledger_account_by_name(session_state, user_id, id_token, is_admin, accou
             return account
     return None
 
-def add_entry_to_ledger_account(session_state, user_id, id_token, is_admin, account_id, transaction_name, description, transaction_type, billing_number, amount, payment_method):
+def add_entry_to_ledger_account(session_state, user_id, id_token, is_admin, account_id, transaction_name, description, transaction_type, billing_number, amount, payment_method, date):
     """Adds a new entry to a specific ledger account in the Firebase Realtime Database."""
     if not firebase_config.db:
         return False
@@ -88,19 +98,16 @@ def add_entry_to_ledger_account(session_state, user_id, id_token, is_admin, acco
         "type": entry_type,
         "amount": float(amount),
         "billing_number": billing_number,
-        "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "date": date,
         "paid": False,
         "payment_method": payment_method
     }
     
-    entries_ref = firebase_config.db.child("ledgers").child(user_id).child(account_id).child("entries")
-    entries = entries_ref.get(token=id_token).val() or []
-    entries.append(new_entry)
-    entries_ref.set(entries, token=id_token)
+    firebase_config.db.child("ledgers").child(user_id).child(account_id).child("entries").push(new_entry, token=id_token)
     return True
 
-def delete_entry_from_ledger_account(session_state, user_id, id_token, is_admin, account_id, entry_index):
-    """Deletes an entry from a specific ledger account by its index in the Firebase Realtime Database."""
+def delete_entry_from_ledger_account(session_state, user_id, id_token, is_admin, account_id, entry_id):
+    """Deletes an entry from a specific ledger account by its ID in the Firebase Realtime Database."""
     if not firebase_config.db:
         return False
 
@@ -109,15 +116,10 @@ def delete_entry_from_ledger_account(session_state, user_id, id_token, is_admin,
     if not id_token:
         raise Exception("Failed to get a fresh ID token. Please log in again.")
         
-    entries_ref = firebase_config.db.child("ledgers").child(user_id).child(account_id).child("entries")
-    entries = entries_ref.get(token=id_token).val()
-    if entries and 0 <= entry_index < len(entries):
-        del entries[entry_index]
-        entries_ref.set(entries, token=id_token)
-        return True
-    return False
+    firebase_config.db.child("ledgers").child(user_id).child(account_id).child("entries").child(entry_id).remove(token=id_token)
+    return True
 
-def mark_ledger_entry_paid(session_state, user_id, id_token, is_admin, account_id, entry_index, paid_status):
+def mark_ledger_entry_paid(session_state, user_id, id_token, is_admin, account_id, entry_id, paid_status):
     """Marks a ledger entry as paid or unpaid in the Firebase Realtime Database."""
     if not firebase_config.db:
         return False
@@ -127,7 +129,7 @@ def mark_ledger_entry_paid(session_state, user_id, id_token, is_admin, account_i
     if not id_token:
         raise Exception("Failed to get a fresh ID token. Please log in again.")
         
-    entry_ref = firebase_config.db.child("ledgers").child(user_id).child(account_id).child("entries").child(str(entry_index)).child("paid")
+    entry_ref = firebase_config.db.child("ledgers").child(user_id).child(account_id).child("entries").child(entry_id).child("paid")
     entry_ref.set(paid_status, token=id_token)
     return True
 
