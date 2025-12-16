@@ -1,1 +1,1 @@
-this an app named finance
+Finance-Tracker! This is an application running on search engine by Streamlit and this application has been created by Gemini Cli. It's hard to believe that app developers had been replaced to some extent but still there is a need, this sentence we used to say a year ago in 2024 but in June 2025, the game has changed. Cli agent introduced by Claude, followed by Gemini has been an amazing tool to create apps and those 3d apps which is a dream for an app developer. Time to fulfill the dream friends!
