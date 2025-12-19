@@ -14,7 +14,7 @@ def app():
     description = st.text_input("Description (optional):")
     billing_number = st.text_input("Billing Number (optional):")
 
-        if st.button("Add Transaction"):
+    if st.button("Add Transaction"):
 
             if name and amount > 0:
 
