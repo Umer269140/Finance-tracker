@@ -7,3 +7,4 @@ firebase-admin
 pyrebase4
 setuptools
 python-dotenv
+firebase_admin
