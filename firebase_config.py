@@ -21,7 +21,7 @@ FIREBASE_CONFIG = {
 
 pb = None
 auth = None
-    db = None
+db = None
 FIREBASE_INIT_ERROR = None
 
 def get_fresh_id_token(session_state):
