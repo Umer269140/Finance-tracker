@@ -71,7 +71,17 @@ def get_ledger_account_by_id(session_state, user_id, id_token, is_admin, account
         return None
         
     account_ref = firebase_config.db.child("ledgers").child(user_id).child(account_id).get(token=id_token)
-    return account_ref.val() if account_ref.val() else None
+    account = account_ref.val()
+    if account:
+        account['id'] = account_id # Add the ID from the Firebase key
+        if 'entries' in account and isinstance(account['entries'], dict):
+            # Convert entries dictionary to a list of dictionaries, including the entry ID
+            entries_list = []
+            for entry_id, entry_data in account['entries'].items():
+                entry_data['id'] = entry_id
+                entries_list.append(entry_data)
+            account['entries'] = entries_list
+    return account if account else None
 
 def get_ledger_account_by_name(session_state, user_id, id_token, is_admin, account_name):
     """Retrieves a single ledger account by its name for a user from the Firebase Realtime Database."""
