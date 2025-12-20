@@ -60,4 +60,6 @@ tagline_already_changed_confirmation.md
 tagline_update_instructions.md
 final_tagline_push_request.md
 ultimatum_tagline_push_request.md
-/database/firebase_credentials.json 
+/database/firebase_credentials.json
+output.log
+error.log 

@@ -30,83 +30,20 @@ def app():
 
                     print("Attempting to add transaction...")
 
+    
+
                     t.add_transaction(st.session_state, user_id, id_token, is_admin, transaction_type, amount, date.strftime("%Y-%m-%d"), name, description, billing_number, payment_method)
+
+    
 
                     print("Transaction successfully added to database.")
 
-                    
+    
 
                     st.success("Transaction added successfully!")
 
     
 
-                    print("Attempting to add ledger account...")
-
-                    if l.add_ledger_account(st.session_state, user_id, id_token, is_admin, name):
-
-                        st.info(f"Ledger account '{name}' created automatically.")
-
-                    print("Ledger account process finished.")
-
-    
-
-                    print("Attempting to get ledger account by name...")
-
-                    ledger_account = l.get_ledger_account_by_name(st.session_state, user_id, id_token, is_admin, name)
-
-                    print(f"Ledger account found: {ledger_account is not None}")
-
-    
-
-                    if ledger_account:
-
-                        print("Attempting to add entry to ledger account...")
-
-                        if l.add_entry_to_ledger_account(
-
-                            st.session_state,
-
-                            user_id,
-
-                            id_token,
-
-                            is_admin,
-
-                            ledger_account["id"],
-
-                            name,
-
-                            description,
-
-                            transaction_type,
-
-                            billing_number,
-
-                            amount,
-
-                            payment_method,
-
-                            date.strftime("%Y-%m-%d")
-
-                        ):
-
-                            st.success(f"Transaction added as entry to ledger account '{name}'.")
-
-                        else:
-
-                            st.error(f"Failed to add transaction as entry to ledger account '{name}'.")
-
-                        print("Finished adding entry to ledger account.")
-
-                    else:
-
-                        st.error(f"Ledger account '{name}' not found after creation attempt.")
-
-                    
-
-                    st.rerun()
-
-    
 
                 except Exception as e:
 

@@ -39,6 +39,7 @@ def app():
                 if st.button(account.get('account_name', 'No Name'), key=f"account_select_{account.get('id')}"):
                     st.session_state.selected_account_id = account.get('id')
                     st.session_state.page = "Ledger Account Detail"
+                    st.rerun()
             with col_delete:
                 if st.button("X", key=f"delete_account_{account.get('id')}"):
                     l.delete_ledger_account(st.session_state, user_id, id_token, is_admin, account.get('id')) # Pass session_state

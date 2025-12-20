@@ -8,7 +8,7 @@ if project_root not in sys.path:
 
 import firebase_config # Initialize Firebase app
 import streamlit as st
-from pages import add_transaction_page, transactions_list_page, budget_page, summary_page, ledger_page, ledger_account_detail_page, login_page
+from pages import add_transaction_page, transactions_list_page, summary_page, ledger_page, ledger_account_detail_page, login_page
 from features.transactions import transactions as t
 from features.ledger import ledger as l
 
@@ -62,8 +62,6 @@ else:
         st.session_state.page = "Add Transaction"
     if st.sidebar.button("Transactions List"):
         st.session_state.page = "Transactions List"
-    if st.sidebar.button("Budget"):
-        st.session_state.page = "Budget"
     if st.sidebar.button("Summary"):
         st.session_state.page = "Summary"
     if st.sidebar.button("Ledger"):
@@ -74,8 +72,6 @@ else:
         add_transaction_page.app()
     elif st.session_state.page == "Transactions List":
         transactions_list_page.app()
-    elif st.session_state.page == "Budget":
-        budget_page.app()
     elif st.session_state.page == "Summary":
         summary_page.app()
     elif st.session_state.page == "Ledger":

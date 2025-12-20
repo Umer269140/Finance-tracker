@@ -1,10 +1,9 @@
+import streamlit as st
 import firebase_config
 from datetime import datetime
 import uuid
+from features.transactions.transactions import add_transaction
 
-import firebase_config
-from datetime import datetime
-import uuid
 
 def add_ledger_account(session_state, user_id, id_token, is_admin, account_name):
     """Adds a new empty ledger account to the Firebase Realtime Database."""
@@ -40,20 +39,26 @@ def get_all_ledger_accounts(session_state, user_id, id_token, is_admin):
         return []
     try:
         accounts_ref = firebase_config.db.child("ledgers").child(user_id).get(token=id_token)
+        print(f"DEBUG: get_all_ledger_accounts - Raw accounts_ref.val(): {accounts_ref.val()}")
         if accounts_ref.val():
             accounts = []
             for item in accounts_ref.each():
                 account = item.val()
                 account['id'] = item.key() # Add the ID from the Firebase key
+                print(f"DEBUG: get_all_ledger_accounts - Account before entries conversion: {account}") # NEW PRINT
                 if 'entries' in account and isinstance(account['entries'], dict):
+                    print(f"DEBUG: get_all_ledger_accounts - Entries before conversion: {account['entries']}") # NEW PRINT
                     # Convert entries dictionary to a list of dictionaries, including the entry ID
                     entries_list = []
                     for entry_id, entry_data in account['entries'].items():
                         entry_data['id'] = entry_id
                         entries_list.append(entry_data)
                     account['entries'] = entries_list
+                    print(f"DEBUG: get_all_ledger_accounts - Entries after conversion: {account['entries']}") # NEW PRINT
                 accounts.append(account)
+            print(f"DEBUG: get_all_ledger_accounts - Processed accounts: {accounts}")
             return accounts
+        print(f"DEBUG: get_all_ledger_accounts - No accounts found for user {user_id}")
         return []
     except Exception as e:
         print(f"Could not get ledger accounts: {e}")
@@ -72,15 +77,19 @@ def get_ledger_account_by_id(session_state, user_id, id_token, is_admin, account
         
     account_ref = firebase_config.db.child("ledgers").child(user_id).child(account_id).get(token=id_token)
     account = account_ref.val()
+    print(f"DEBUG: get_ledger_account_by_id - Account before entries conversion: {account}") # NEW PRINT
     if account:
         account['id'] = account_id # Add the ID from the Firebase key
         if 'entries' in account and isinstance(account['entries'], dict):
+            print(f"DEBUG: get_ledger_account_by_id - Entries before conversion: {account['entries']}") # NEW PRINT
             # Convert entries dictionary to a list of dictionaries, including the entry ID
             entries_list = []
             for entry_id, entry_data in account['entries'].items():
                 entry_data['id'] = entry_id
                 entries_list.append(entry_data)
             account['entries'] = entries_list
+            print(f"DEBUG: get_ledger_account_by_id - Entries after conversion: {account['entries']}") # NEW PRINT
+    print(f"DEBUG: get_ledger_account_by_id - Processed account entries: {account.get('entries') if account else 'None'}") 
     return account if account else None
 
 def get_ledger_account_by_name(session_state, user_id, id_token, is_admin, account_name):
@@ -112,8 +121,8 @@ def add_entry_to_ledger_account(session_state, user_id, id_token, is_admin, acco
         "paid": False,
         "payment_method": payment_method
     }
-    
     firebase_config.db.child("ledgers").child(user_id).child(account_id).child("entries").push(new_entry, token=id_token)
+    add_transaction(session_state, user_id, id_token, is_admin, transaction_type, float(amount), date, transaction_name, description, billing_number, payment_method)
     return True
 
 def delete_entry_from_ledger_account(session_state, user_id, id_token, is_admin, account_id, entry_id):

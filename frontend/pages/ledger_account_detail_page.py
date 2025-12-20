@@ -1,7 +1,10 @@
 import streamlit as st
+from datetime import datetime # Added for date input default
 from features.ledger import ledger as l
+from features.transactions import transactions as t # Added for adding transactions
 
 def app():
+    print("DEBUG: Entering ledger_account_detail_page.app()") # NEW PRINT
     st.header("Ledger Account Details")
 
     user_id = st.session_state.user_id
@@ -10,12 +13,15 @@ def app():
 
     if 'selected_account_id' in st.session_state and st.session_state.selected_account_id:
         account_id = st.session_state.selected_account_id
+        print(f"DEBUG: ledger_account_detail_page - Selected account ID: {account_id}") # NEW PRINT
         account = l.get_ledger_account_by_id(st.session_state, user_id, id_token, is_admin, account_id) # Pass session_state
+        print(f"DEBUG: ledger_account_detail_page - Account object after retrieval: {account}") # NEW PRINT
 
         if account:
             st.subheader(f"Account: {account.get('account_name', 'N/A')}")
             
             entries = account.get("entries", [])
+            print(f"DEBUG: ledger_account_detail_page - Entries retrieved from account: {entries}")
             if entries:
                 st.write("### Entries:")
                 st.markdown("---")
@@ -57,8 +63,32 @@ def app():
                                 l.delete_entry_from_ledger_account(st.session_state, user_id, id_token, is_admin, account_id, entry.get('id')) # Pass session_state
                                 st.rerun()
                 st.markdown("---")
+                st.markdown("---")
             else:
                 st.write("No entries in this ledger account yet.")
+
+            with st.expander("Add New Entry"):
+                with st.form(key='add_entry_form', clear_on_submit=True):
+                    entry_name = st.text_input("Entry Name")
+                    entry_description = st.text_area("Description")
+                    entry_type = st.selectbox("Type", ["Expense", "Income"])
+                    entry_amount = st.number_input("Amount", min_value=0.01, step=0.01)
+                    entry_billing_number = st.text_input("Billing Number")
+                    entry_payment_method = st.selectbox("Payment Method", ["Cash", "Bank Account", "Other"])
+                    entry_date = st.date_input("Date", value=datetime.now())
+                    submit_button = st.form_submit_button(label='Add Entry')
+
+                    if submit_button:
+                        if all([entry_name, entry_description, entry_type, entry_amount, entry_billing_number, entry_payment_method, entry_date]):
+                            l.add_entry_to_ledger_account(
+                                st.session_state, user_id, id_token, is_admin, account_id,
+                                entry_name, entry_description, entry_type, entry_billing_number,
+                                entry_amount, entry_payment_method, str(entry_date)
+                            )
+                            st.success("Entry added successfully!")
+                            st.rerun()
+                        else:
+                            st.error("Please fill out all fields.")
             
             if st.button("Back to Ledger Accounts"):
                 st.session_state.page = "Ledger"
