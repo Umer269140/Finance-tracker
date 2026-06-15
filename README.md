@@ -70,7 +70,7 @@ https://finance-tracker-vfjotjafcgnlht4sftjthq.streamlit.app/
 
 ## 👨‍💻 Author
 
-**Umer Ali**  
+**Umer**  
 GitHub: https://github.com/Umer269140
 LinkedIn: https://www.linkedin.com/in/umer-ali-621754374/
 
